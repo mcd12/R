@@ -1,0 +1,44 @@
+
+{% extends 'app/base.html' %}
+{% block content %}
+
+<!-- #これでカスタムテンプレートを追加 -->
+{% load custom_filters %}
+
+<form method="get" action="" food="filter_form">
+    
+        <div class="btn-group-toggle" data-toggle="buttons" >
+            {% for foodstuff in foodstuffs %}
+            <!-- カスタムリフターで検索にlabelの最後にactive（トグルONの状態指示）をつけたい -->
+            <label class="btn btn-outline-primary  " >
+                <input type="checkbox" 
+                 id="filter_foodstuff_{{ foodstuff.pk }}" 
+                 name="foodstuff" 
+                 value="{{ foodstuff.pk }}" 
+                 autocomplete="off"
+                 {{ foodstuff.pk | checked:request.GET }} >
+            <!-- カスタムフィルターでcheckedを追加している -->
+                   {{ foodstuff.name }}         
+            </label>
+           {% endfor %}  
+        </div>
+        <div>
+           <button id="filter" type="submit" class="btn btn-outline-primary btn-block " >
+            絞り込み
+           </button>
+        </div>
+    </form>
+    
+
+        <div id="main">
+                <table>
+                    <tr>
+                    {% for food in object_list %}
+                    <td>     
+                    <button type="button" class="btn btn-primary"> {{ food.name }}</button>
+                    </td>    
+                    {% endfor %}
+                </table>
+            </div>
+
+{% endblock %}
