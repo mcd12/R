@@ -1,10 +1,20 @@
 from django.db import models
 
+
+class Category(models.Model):
+    name = models.CharField( max_length=255,verbose_name='カテゴリ名')
+
+    def __str__(self):
+        return self.name
+
+
 class Foodstuff(models.Model):
 	name = models.CharField(max_length=100)
+	category = models.ForeignKey(Category, verbose_name='カテゴリ', on_delete=models.PROTECT,blank=True, null=True)
 
 	def __str__(self):
 		return self.name
+
 
 class Food(models.Model):
 	name = models.CharField(max_length=100)

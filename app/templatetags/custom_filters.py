@@ -8,9 +8,3 @@ def checked(value, querydict):
     if str(value) in foodstuffs:
         return "checked"
     return ""
-
-@register.filter
-def active(value):
-    if value is None:
-        return "active"
-    return ""

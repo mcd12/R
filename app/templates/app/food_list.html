@@ -5,36 +5,64 @@
 <!-- #これでカスタムテンプレートを追加 -->
 {% load custom_filters %}
 
+<!-- 
+    <div >
+        <div>
+
+            {%  for A in stuff %}
+            <div>{{ A.name }}</div>
+            <div>
+                {% for B in A.foodstuff %}
+                    {{ B }}
+                {% endfor %}
+            </div>
+            {% endfor %}
+
+        </div>
+    </div> -->
+
+
 <form method="get" action="" food="filter_form">
-    
-        <div class="btn-group-toggle" data-toggle="buttons" >
-            {% for foodstuff in foodstuffs %}
-            <!-- カスタムリフターで検索にlabelの最後にactive（トグルONの状態指示）をつけたい -->
-            <label class="btn btn-outline-primary  " >
-                <input type="checkbox" 
-                 id="filter_foodstuff_{{ foodstuff.pk }}" 
-                 name="foodstuff" 
-                 value="{{ foodstuff.pk }}" 
-                 autocomplete="off"
-                 {{ foodstuff.pk | checked:request.GET }} >
-            <!-- カスタムフィルターでcheckedを追加している -->
-                   {{ foodstuff.name }}         
-            </label>
-           {% endfor %}  
+
+    <div >
+
+{{q_foodstuffs}}
+{{AAfoodstuffs}}
+        <div>
+
+            {%  for A in stuff %}
+            <div>{{ A.name }}</div>
+            <div class="btn-group-toggle" data-toggle="buttons" >
+                {% for B in A.foodstuff %}
+                    <label class="btn btn-outline-primary {{B.pk | checked:request.GET|yesno:'active,'}}" >
+                            <input type="checkbox" 
+                             id="filter_foodstuff_{{ B.pk }}" 
+                             name="foodstuff" 
+                             value="{{ B.pk }}" 
+                             autocomplete="off"
+                             {{ B.pk | checked:request.GET }} >
+                        <!-- カスタムフィルターでcheckedを追加している -->
+                               {{ B }}         
+                        </label>
+                {% endfor %}
+            </div>
+            {% endfor %}
+
         </div>
         <div>
-           <button id="filter" type="submit" class="btn btn-outline-primary btn-block " >
-            絞り込み
-           </button>
+                <button id="filter" type="submit" class="btn btn-outline-primary btn-block " >
+                 絞り込み
+                </button>
         </div>
-    </form>
-    
+    </div>
+</form>
 
         <div id="main">
                 <table>
                     <tr>
                     {% for food in object_list %}
                     <td>     
+                        {{ c_foodstuffs }}
                     <button type="button" class="btn btn-primary"> {{ food.name }}</button>
                     </td>    
                     {% endfor %}
