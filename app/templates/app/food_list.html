@@ -5,29 +5,27 @@
 <!-- #これでカスタムテンプレートを追加 -->
 {% load custom_filters %}
 
-<!-- 
-    <div >
-        <div>
-
-            {%  for A in stuff %}
-            <div>{{ A.name }}</div>
-            <div>
-                {% for B in A.foodstuff %}
-                    {{ B }}
-                {% endfor %}
-            </div>
-            {% endfor %}
-
-        </div>
-    </div> -->
-
-
 <form method="get" action="" food="filter_form">
 
     <div >
+<!-- 確認用 -->
+CBにある素材のid？：{{q_foodstuffs}}<br>
+Q:CBにある素材の数：{{Q_foodstuffs}}<br>
+???の数：{{M_foodstuffs}}<br>
 
-{{q_foodstuffs}}
-{{AAfoodstuffs}}
+
+???：
+{% for food in M_count %}
+{{food.match_count}}
+{% endfor %}<br>
+
+C:料理に含まれてる素材の数：
+{% for food in food %}
+{{ food.foodstuffs.count }}
+ {% endfor %}<br>
+
+
+
         <div>
 
             {%  for A in stuff %}
@@ -37,7 +35,7 @@
                     <label class="btn btn-outline-primary {{B.pk | checked:request.GET|yesno:'active,'}}" >
                             <input type="checkbox" 
                              id="filter_foodstuff_{{ B.pk }}" 
-                             name="foodstuff" 
+                             name="cb_foodstuff" 
                              value="{{ B.pk }}" 
                              autocomplete="off"
                              {{ B.pk | checked:request.GET }} >
@@ -47,11 +45,11 @@
                 {% endfor %}
             </div>
             {% endfor %}
-
         </div>
+        <br>
         <div>
                 <button id="filter" type="submit" class="btn btn-outline-primary btn-block " >
-                 絞り込み
+                 絞り込み　{{ Q }}
                 </button>
         </div>
     </div>

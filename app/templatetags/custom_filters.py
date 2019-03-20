@@ -4,7 +4,7 @@ register = template.Library()
 
 @register.filter
 def checked(value, querydict):
-    foodstuffs = querydict.getlist('foodstuff')
+    foodstuffs = querydict.getlist('cb_foodstuff')
     if str(value) in foodstuffs:
         return "checked"
     return ""
