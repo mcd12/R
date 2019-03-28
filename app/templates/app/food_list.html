@@ -2,69 +2,243 @@
 {% extends 'app/base.html' %}
 {% block content %}
 
-<!-- #これでカスタムテンプレートを追加 -->
 {% load custom_filters %}
 
 <form method="get" action="" food="filter_form">
 
-    <div >
-<!-- 確認用 -->
-CBにある素材のid？：{{q_foodstuffs}}<br>
-Q:CBにある素材の数：{{Q_foodstuffs}}<br>
-???の数：{{M_foodstuffs}}<br>
-
-
-???：
-{% for food in M_count %}
-{{food.match_count}}
-{% endfor %}<br>
-
-C:料理に含まれてる素材の数：
-{% for food in food %}
-{{ food.foodstuffs.count }}
- {% endfor %}<br>
-
-
-
-        <div>
-
-            {%  for A in stuff %}
-            <div>{{ A.name }}</div>
-            <div class="btn-group-toggle" data-toggle="buttons" >
-                {% for B in A.foodstuff %}
-                    <label class="btn btn-outline-primary {{B.pk | checked:request.GET|yesno:'active,'}}" >
-                            <input type="checkbox" 
-                             id="filter_foodstuff_{{ B.pk }}" 
-                             name="cb_foodstuff" 
-                             value="{{ B.pk }}" 
-                             autocomplete="off"
-                             {{ B.pk | checked:request.GET }} >
-                        <!-- カスタムフィルターでcheckedを追加している -->
-                               {{ B }}         
-                        </label>
-                {% endfor %}
+    
+<!-- 上段 -->
+<div class="select">   
+    <div class="inner"
+    > 
+        <container id="container">
+        <!-- id=0 肉類 -->
+        <!-- カテゴリー名のチェックボックス -->
+        <div >    
+        <label  id="areaA" class="boxC"> 
+            <input type="checkbox" data-check='.list1'>
+            {{ categorys.0.ename }}
+            </label>
+        </div>
+        <!-- 各素材をループ -->
+        <div id="area1">
+        {%  for A in C1 %}
+            <label>  
+                <!-- 吹き出しpntデータ取得 -->
+                    {% for key in A.food_set.all %} 
+                    <pnt data-pnt="#pnt{{ key.id }}"  > 
+                    <!-- チケットtck用id取得 -->
+                    <tck data-tck="#tck{{ key.id }}" > 
+                    {% endfor %}        
+                        <input type="checkbox" 
+                            id="filter_foodstuff_{{ A.pk }}" 
+                            name="cb_foodstuff" 
+                            value="{{ A.pk }}" 
+                            {{ A.pk | checked:request.GET }}
+                            autocomplete="off"
+                            class = "list1" >
+                                <in> 
+                                    <!-- ドッグイヤーマーカー -->
+                                    <p id ="con{{A.id}}" class="dog_year"></p>
+                                {{A}}<br>
+                                <font size="2">/{{ A.ename }} </font>
+                                </in>
+                        <!-- <p id ="con{{A.id}}" class="arrow_box">!</p> -->
+                </tck></pnt>
+             </label>
+             {% endfor %} 
             </div>
+            
+            
+       
+        <!--  魚類 -->
+        <!-- カテゴリー名のチェックボックス -->
+        <div >    
+             <label  id="areaB" class="boxC">
+                <input type="checkbox" data-check='.list2'>
+                {{ categorys.1.ename }}
+            </label>
+        </div>
+            <!-- 素材をループ -->
+           <div id="area2">
+            {%  for A in C2 %}
+            <label>  
+                <!-- 吹き出しpntデータ取得 -->
+                {% for key in A.food_set.all %} 
+                <pnt data-pnt="#pnt{{ key.id }}" > 
+                <!-- チケットtck用id取得 -->
+                <tck data-tck="#tck{{ key.id }}" > 
+                {% endfor %}        
+                        <input type="checkbox" 
+                            id="filter_foodstuff_{{ A.pk }}" 
+                            name="cb_foodstuff" 
+                            value="{{ A.pk }}" 
+                            {{ A.pk | checked:request.GET }}
+                            autocomplete="off" 
+                            class = "list2">
+                            <!-- オールチェック用listクラス -->
+                                <in> 
+                                    <!-- ドッグイヤーマーカー -->
+                                    <p id ="con{{A.id}}" class="dog_year"></p>
+                                {{A}}<br>
+                                <font size="2">/{{ A.ename }} </font>
+                                </in>
+                    <!-- <p id ="con{{A.id}}" class="arrow_box">!</p> -->
+                </tck></pnt>
+             </label>
+           {% endfor %} 
+           </div>
+    
+        <!-- id=2 野菜類 -->
+        <!-- カテゴリー名のチェックボックス -->
+        <div >
+        <label  id="areaC" class="boxC">
+                <input type="checkbox" data-check='.list3'>
+                {{ categorys.2.ename }}
+            </label>
+        </div>
+            <!-- 素材をループ -->
+           <div id="area3">
+            {%  for A in C3 %}
+            <label>  
+                <!-- 吹き出しpntデータ取得 -->
+                {% for key in A.food_set.all %} 
+                <pnt data-pnt="#pnt{{ key.id }}" > 
+                <!-- チケットtck用id取得 -->
+                <tck data-tck="#tck{{ key.id }}" > 
+                {% endfor %}        
+                        <input type="checkbox" 
+                            id="filter_foodstuff_{{ A.pk }}" 
+                            name="cb_foodstuff" 
+                            value="{{ A.pk }}" 
+                            {{ A.pk | checked:request.GET }}
+                            autocomplete="off"
+                            class = "list3" >
+                                <in> 
+                                    <!-- ドッグイヤーマーカー -->
+                                    <p id ="con{{A.id}}" class="dog_year"></p>
+                                {{A}}<br>
+                                <font size="2">/{{ A.ename }} </font>
+                                </in>
+                        <!-- <p id ="con{{A.id}}" class="arrow_box">!</p> -->
+                </tck></pnt>
+             </label>
+             {% endfor %} 
+            </div>
+           
+    
+        <!-- id=3 その他 -->
+        <!-- カテゴリー名のチェックボックス -->
+        <div>
+        <label id="areaD" class="boxC">
+                <input type="checkbox" data-check='.list4'>
+                {{ categorys.3.ename }}
+            </label>
+        </div>
+            <!-- 素材をループ -->
+            <div id="area4">
+            {%  for A in C4 %}
+            <label >
+            <!-- 吹き出しpntデータ取得 -->
+            {% for key in A.food_set.all %}
+            <pnt data-pnt="#pnt{{ key.id }}" >
+            <!-- チケットtck用id取得 -->
+            <tck data-tck="#tck{{ key.id }}" >
+            {% endfor %}  
+               
+                        <input type="checkbox" 
+                            id="filter_foodstuff_{{ A.pk }}" 
+                            name="cb_foodstuff" 
+                            value="{{ A.pk }}" 
+                            {{ A.pk | checked:request.GET }}
+                            autocomplete="off"
+                            class = "list4" >
+                                <in> 
+                                    <!-- ドッグイヤーマーカー -->
+                                    <p id ="con{{A.id}}" class="dog_year"></p>    
+                                {{A}}<br>
+                                <font size="2">/{{ A.ename }} </font>
+                                </in>
+                    <!-- 吹き出し用conマーカー -->
+                    <!-- <p id ="con{{A.id}}" class="arrow_box">!</p> -->
+            </tck></pnt>
+        </label>
             {% endfor %}
         </div>
-        <br>
-        <div>
-                <button id="filter" type="submit" class="btn btn-outline-primary btn-block " >
-                 絞り込み　{{ Q }}
-                </button>
+
         </div>
+    </container>
+        <br>
+
+<!-- サブミットボタン -->
+    <button id="filter" type="submit" class="boxS" >
+                Search
+    </button>
+        <br>
     </div>
-</form>
+</div>
 
-        <div id="main">
-                <table>
-                    <tr>
-                    {% for food in object_list %}
-                    <td>     
-                        {{ c_foodstuffs }}
-                    <button type="button" class="btn btn-primary"> {{ food.name }}</button>
-                    </td>    
-                    {% endfor %}
-                </table>
+<!-- ここから下段 -->
+    <div class="inner">
+        <div>
+            {% for food in object_list %}
+            <div class="boxE" id="cont">  
+                    <!-- 吹き出し用のデータターゲット -->
+                    {% for key in food.foodstuffs.all %}
+                    <il data-target="#con{{ key.id }}"  >   
+                        {% endfor %}  
+                        <span >
+                            <!-- id=pntで塗りマーカー -->
+                                <div class="hover">
+                                    <a  class= "boxF" 
+                                        id ="pnt{{food.id}}" >
+                                    <!-- チケットマーカー -->
+                                    <p id ="tck{{food.id}}" class="ticket"></p>
+                                        {{ food.name }}<br>
+                                        <!-- 一致した料理の数/必要な材料数 -->
+                                        <!-- {{ food.co }}/{{food.foodstuffs.count}} -->
+                                    </a>
+                                    <a class="pop"
+                                        href="https://www.google.co.jp/search?q={{ food.name }}" 
+                                        target="_blank">                                     
+                                        P.{{ food.page }}/Recipe </a>
+                                </div>
+                        </span>
+                        
+                    </il>
             </div>
-
+            {% endfor %}
+            
+    </div>                   
+    
+</form>
 {% endblock %}
+
+
+<!-- クエリをループさせる方法 -->
+<!-- <div class="select">
+        <div class="inner">
+        {%  for A in stuff %}
+            <div class="boxC">{{ A.ename }}</div>
+                <div >
+                {% for B in A.foodstuff %} 
+
+                    <label>
+                            <input type="checkbox" 
+                                id="filter_foodstuff_{{ B.pk }}" 
+                                name="cb_foodstuff" 
+                                value="{{ B.pk }}" 
+                                {{ B.pk | checked:request.GET }}
+                                autocomplete="off" >
+                                <in>                   
+                                {{ B }} <br> 
+                                <font size="2">{{ B.ename }} </font> 
+                                </in> 
+                       
+                            <p id ="con{{B.id}}" class="arrow_box">!</p>
+                    </label>
+                {% endfor %}
+            </div> 
+        {% endfor %}
+        </div>   
+    </div> -->

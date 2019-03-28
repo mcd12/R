@@ -7,15 +7,17 @@ from .models import Food, Foodstuff,Category
 class FoodListView(ListView):
 
     model =  Food
-    context_object_name = "food"
+    context_object_name = "Food"
+    queryset = Food.objects.prefetch_related('foodstuffs')
 
     q_foodstuffs = ''
     Q_foodstuffs = ''
+    C_foodstuffs = ''
     M_foodstuffs = ''
-    
-    def get_hobbys_count(self):
-        count_f = Food.objects.filter(foodstuffs__food=self).count()
-        return count_f
+    M_filter = ''
+    foods_count = ''
+    A_foodstuffs = ''
+    foodid = ''
 
     def get_context_data(self, **kwargs):
         context = super(FoodListView, self).get_context_data(**kwargs)
@@ -23,83 +25,152 @@ class FoodListView(ListView):
         # 絞り込み条件の設定
         foodstuffs = Foodstuff.objects.all()
         context['foodstuffs'] = foodstuffs
-        
+
         categorys = Category.objects.all()
         context['categorys'] = categorys
 
-        foods = Food.objects.all()
+        foods = self.model.objects.all()
         context['foods'] = foods
+
+
+# これができているディクショナリー
+        SS = []
+        for foodstuff in foodstuffs :
+            fl = foodstuff.food_set.all().values('id')
+            SS.append(fl)
+        context['foodid'] = SS
+
+# カテゴリー別のクエリを作成
+        C1 = foodstuffs.filter(category_id=1)
+        C1 = C1.annotate(co=Count('food')).order_by('-co')
+        context['C1'] = C1
+
+        C2 = foodstuffs.filter(category_id=2)
+        C2 = C2.annotate(co=Count('food')).order_by('-co')
+        context['C2'] = C2
+
+        C3 = foodstuffs.filter(category_id=3)
+        C3 = C3.annotate(co=Count('food')).order_by('-co')
+        context['C3'] = C3
+
+        C4 = foodstuffs.filter(category_id=4)
+        C4 = C4.annotate(co=Count('food')).order_by('-co')
+        context['C4'] = C4
+       
+        BB = []
+        for category in categorys:
+            B = category.foodstuff_set.all()
+            Bid = category.foodstuff_set.all().values('id')
+            BB.append(B)
 
         C = []
         for category in categorys:
             B = category.foodstuff_set.all()
-            D = {"name": category.name, "foodstuff": B}
+            D = {"ename": category.ename, "foodstuff":B}
             C.append(D)
-
         context['stuff'] = C 
-       
-        # context['C_list'] = Food.objects.foodstuffs.all().annotate(
-        #     match_count = Count('foodcategory')).order_by('match_count')
-       
-        M = []
-        for food in foods :
-            M = food.foodstuffs.all().annotate(
-               match_count = Count('category'))
-       
-        context['M_count'] = M
         
+
+        T = []
+        for AAA in foodstuffs:
+            A = AAA.food_set.all()
+            ID = A.values('id')
+            T.append(ID)
+
+        context['foodids'] = C 
+        
+        # フードが持っている素材のID
+        
+        for food in foods :
+            hasid = food.foodstuffs.all()
+        context['hasid'] = hasid
+    
+        
+        C = []
+        for food in foods:
+            N = food.foodstuffs.count()
+            C.append(N)
+        self.C_foodstuffs = C
 
         context['q_foodstuffs'] = self.q_foodstuffs
         context['Q_foodstuffs'] = self.Q_foodstuffs
+        context['C_foodstuffs'] = self.C_foodstuffs
         context['M_foodstuffs'] = self.M_foodstuffs
-
+        context['M_filter'] = self.M_filter
+        context['foods_count'] = self.foods_count
+        context['A_foodstuffs'] = self.A_foodstuffs
+        context['foods_ids'] = self.foods_ids
+        context['foodstuff_id_set'] = self.foodstuff_id_set
+       
         return context
  
+
     def get_queryset(self):
 
-        foods = self.model.objects.all()
-        
+        foods = self.model.objects.all().order_by('foodcategory_id')
+    
         q_foodstuffs = self.request.GET.getlist('cb_foodstuff')    
         Q = len(q_foodstuffs)
-        M = []
-        # M = Food.foodstuffs.count()
-        # N = Food.objects.filter(foodstuffs__in=q_foodstuffs).count()
 
-
-        # C = self.model.objects.filter(foodstuffs__food=self).annotate()
-       
-       #確認用
+        #確認用
         self.q_foodstuffs = q_foodstuffs
         self.Q_foodstuffs = Q
-        self.M_foodstuffs = M
+           
+        foods_count = foods.count()
+        self.foods_count = foods_count
 
-    #     q_foodstuffs = self.request.GET.getlist('foodstuff')
-    #     full = []
-    #     minus_one = []
-    #     print('lskdjflskdjflaaaaa' + q_foodstuffs)
 
-    #     q_foodstuffs = map(lambda x: x.value, q_foodstuffs)
+        M = Food.objects.values('id', 'name','foodstuffs')
+       
+        MM = []
+        for m in M :
+            MM.append(m)
+        self.A_foodstuffs = MM
+        
+        # foodのIDを取得
+        foods_ids = foods.values('id')
+        self.foods_ids = foods_ids
 
-    #     for food in foods:
-    #         count = food.foodstuffs.count()
-    #         match_count = (food.foodstuffs & q_foodstuffs).count()
-
-    #         if count - match_count == 0:
-    #             full.append(food)
-    #         elif count - match_count == 1:
-    #             minus_one.append(food)
-
-    #     #  q_foodstuffs = self.request.GET.getlist('foodstuff')
-    #     #  o_foodstuffs = foods.foodstuff.count()
-    #     #  c_foodstuffs = self.rewuest.GET.getlist('foodstuff').count('q_foodstuffs')
+        IDs = []
+        for foods_id in foods_ids :
+            ID = []
+            for m in M :
+                if foods_id['id'] == m['id']:
+                    ID.append(str(m['foodstuffs']))
+            MC_set = set(ID) & set(q_foodstuffs)
+            MC = len(MC_set)
+            IDs.append(MC)
+        self.M_foodstuffs = IDs
+        
+        foodstuffs = Foodstuff.objects.all()
+        D = []
+        for foodstuff in foodstuffs:
+            E = foodstuff.food_set.all()
+            F = E.values('id')
+            D.append(F)
+        self.foodstuff_id_set = D
+        
+        C = []
+        for food in foods:
+            N = food.foodstuffs.count()
+            C.append(N)
+        self.C_foodstuffs = C
+        
+      
+    # フィルター        
+        # if len(q_foodstuffs) != 0:
+        #     foods = foods.annotate(C_foodstuffs=Count('foodstuffs')).filter(C_foodstuffs__lte=MC)
+       
+        # if len(q_foodstuffs) != 0:
+        #     foods = foods.filter(foodstuffs__in=q_foodstuffs).distinct().order_by('foodcategory_id')
 
         if len(q_foodstuffs) != 0:
-            foods = foods.filter(foodstuffs__in=q_foodstuffs).distinct()
-            
-    #     #  if len(q_foodstuffs) != 0:
-    #     #     minus_one = foods.filter(foodstuffs__in=q_foodstuffs).distinct()
 
-
-        # foods = {"full": full}
-
+            A = foods.filter(foodstuffs__in=q_foodstuffs).distinct()
+            foods = A.annotate(co=Count('foodstuffs')).order_by('-co','foodcategory_id')
+       
+# よくわからないがマッチしている材料順にならんでいる・・・
+# foods = A.annotate(co=Count('foodstuffs')).order_by('-co')
         return foods
+
+    
